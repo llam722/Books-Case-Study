@@ -4,7 +4,7 @@ const bookController = require('../controllers/bookController');
 
 
 router.get('/', bookController.getBooks, (req, res) => {
-  res.status(200).send('ok');
+  res.status(200).json(res.locals.books);
 });
  
 module.exports = router;
