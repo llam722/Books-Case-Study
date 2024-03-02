@@ -8,7 +8,7 @@ router.get('/', bookController.getBooks, (req, res) => {
 });
 
 router.post('/', bookController.addBook, (req, res) => {
-  res.status(200).json(res.locals.newBook);
+  res.status(201).json(res.locals.newBook);
 });
  
 module.exports = router;
