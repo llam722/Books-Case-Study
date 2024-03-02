@@ -1,9 +1,9 @@
 const express = require("express");
+const path = require("path");
 const app = express();
 const PORT = 3000;
-
-
 const bookRouter = require("./routes/bookRouter");
+
 
 //used to parse JSON data from requests
 app.use(express.json());
@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 //route requests to bookRouter
 app.use("/books", bookRouter);
 
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, ""));
+});
 
 app.use("*", (req, res) => {
   return res.status(404).send("The page you are looking for does not exist.");

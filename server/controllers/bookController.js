@@ -12,14 +12,12 @@ bookController.getBooks = async (req, res, next) => {
   const skipPage = (page - 1) * limit;
 
   try {
-    // const books = await Book.find().limit(limit).skip(skipPage);
-    // res.status(200).json({
-    //   books,
-    //   totalPages: Math.ceil(books.length / limit),
-    //   currentPage: page,
-    // })
+    res.locals.books = 'books';
     res.status(200).json(books);
   } catch (err) {
     res.status(400).send("Error retrieving books...");
   }
+  return next();
 }
+
+module.exports = bookController;
