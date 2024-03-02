@@ -14,7 +14,22 @@ bookController.getBooks = async (req, res, next) => {
   try {
     res.locals.books = "books kept here...";
   } catch (err) {
-    res.status(400).send("Error retrieving books...");
+    res.status(400).send("Error retrieving books...", err);
+  }
+  return next();
+};
+
+bookController.addBook = async (req, res, next) => {
+  try {
+    const { title, author, publicationYear } = req.body;
+    const newBook = await Book.create({
+      title,
+      author,
+      publicationYear,
+    });
+    res.locals.newBook = newBook;
+  } catch (err) {
+    res.status(400).send("Error adding book...", err);
   }
   return next();
 };
