@@ -8,7 +8,7 @@ bookController.getBooks = async (req, res, next) => {
 	//if a page query parameter is provided, use it to determine which page of books to return, if not, default to the first page
 	const page = parseInt(req.query.page) || 1;
 	//the number of books to return per page
-	const limit = parseInt(req.query.limit) || 10;
+	const limit = parseInt(req.query.limit) || 5;
 	const skipPage = (page - 1) * limit;
 
 	try {
@@ -21,8 +21,25 @@ bookController.getBooks = async (req, res, next) => {
 };
 
 bookController.addBook = async (req, res, next) => {
+	const { title, author, publicationYear } = req.body;
+
+	if (!title) {
+		return res.status(400).send('Title is required...');
+	}
+	if (!author) {
+		return res.status(400).send('Author is required...');
+	}
+	if (!publicationYear) {
+		return res.status(400).send('Publication year is required...');
+	}
+
+  //validation to ensure the publication year is not in the future or negative
+  const currentYear = new Date().getFullYear();
+  if (publicationYear > currentYear || publicationYear < 0) {
+    return res.status(400).send('Publication year cannot be in the future or negative...');
+  }
+
 	try {
-		const { title, author, publicationYear } = req.body;
 		const newBook = await Book.create({
 			title,
 			author,
@@ -35,5 +52,7 @@ bookController.addBook = async (req, res, next) => {
 	}
 	return next();
 };
+
+
 
 module.exports = bookController;
