@@ -12,7 +12,8 @@ bookController.getBooks = async (req, res, next) => {
 	const skipPage = (page - 1) * limit;
 
 	try {
-		res.locals.books = 'books kept here...';
+		const books = await Book.find().limit(limit).skip(skipPage);
+		res.locals.books = books;
 	} catch (err) {
 		res.status(400).send('Error retrieving books...', err);
 	}
