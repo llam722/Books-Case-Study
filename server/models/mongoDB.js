@@ -11,10 +11,10 @@ mongoose
     dbName: "Erewhon",
   })
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log("Connected to MongoDB...");
   })
   .catch((err) => {
-    console.log(err);
+    console.log(err, 'Connection to MongoDB failed...');
   });
 
 const Book = mongoose.model("book", bookSchema);
