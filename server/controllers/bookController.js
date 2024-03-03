@@ -39,7 +39,7 @@ bookController.getBookById = async (req, res, next) => {
 
 //Add a new book to the collection. Implement input validation to ensure all required fields are provided (`title`, `author`, `publicationYear`), and `publicationYear` should be a valid year in the past.
 bookController.addBook = async (req, res, next) => {
-	const { title, author, publicationYear } = req.body;
+  const { title, author, publicationYear } = req.body;
 
 	if (!title)           return res.status(400).send('Title is required...');
 	if (!author)          return res.status(400).send('Author is required...');
@@ -68,7 +68,31 @@ bookController.addBook = async (req, res, next) => {
 
 }
 
+//Update details of a specific book by ID. Allow partial updates, and ensure validation is applied to the input data.
+bookController.updateBook = async (req, res, next) => {
+  const { id } = req.params;
+  const {title, author, publicationYear} = req.body;
+  if (!id) return res.status(400).send('Book ID is required to update book.');
+  if (!req.body) return res.status(400).send('No data provided to update book...');
+  
+  try {
+    const book = await Book.findById(id);
+    //if the book does not exist, return an error
+    if (!book) return res.status(400).send('Book does not exist...');
+    //if the book exists, update the fields that are provided in the request body if they are not empty
+    if (title) book.title = title;
+    if (author) book.author = author;
+    if (publicationYear) book.publicationYear = publicationYear;
 
+    //save the updated book to the database
+    const updatedBook = await book.save();
+    res.locals.updatedBook = updatedBook;
+
+    return next();
+  } catch (err) {
+    res.status(400).send('Error updating book...', err);
+  }
+}
 
 
 module.exports = bookController;
