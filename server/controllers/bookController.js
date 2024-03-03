@@ -136,7 +136,7 @@ bookController.deleteBook = async (req, res, next) => {
 
 };
 
-//Implement search functionality to allow users to search for books by title or author, (added publication year)
+//Implement search functionality to allow users to search for books by title or author
 bookController.searchBooks = async (req, res, next) => {
 	//to be defined depending on the search parameters provided
 	const { q } = req.query;
@@ -148,7 +148,7 @@ bookController.searchBooks = async (req, res, next) => {
 
 	try {
 		//use mongoDB's conditional $or operator and $regex operator to perform a case insensitive search
-		const query = {$or: [{ title: { $regex: q, $options: 'i' } }, { author: { $regex: q, $options: 'i' } }, { publicationYear: q }]};
+		const query = {$or: [{ title: { $regex: q, $options: 'i' } }, { author: { $regex: q, $options: 'i' } }]};
 		//search by title, matches all books with case insensitive title
 		const books = await Book.find(query);
 
