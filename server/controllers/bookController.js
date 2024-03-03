@@ -42,16 +42,17 @@ bookController.addBook = async (req, res, next) => {
 	//created error array to in case multiple fields are missing
 	const errors = [];
 
-	if (!title) errors.push('Title is required...');
-	if (!author) errors.push('Author is required...');
-	if (!publicationYear) errors.push('Publication year is required...');
+	if (!title || typeof title !== 'string')                    errors.push('Title is required or must be a string...');
+	if (!author || typeof author !== 'string')                  errors.push('Author is missing or must be a string...');
+	if (!publicationYear|| typeof publicationYear !== 'number') errors.push('Publication year is missing or must be a number...');
 
 	if (errors.length > 0) return res.status(400).json({ errors });
 
 	//ensure the publication year is not in the future or negative
 	const currentYear = new Date().getFullYear();
 	if (publicationYear > currentYear || publicationYear < 0) {
-		return res.status(400).send('Publication year cannot be in the future or negative...');
+    errors.push('Publication year cannot be in the future or negative...');
+    return res.status(400).json({ errors });
 	}
 
 	try {
@@ -71,10 +72,20 @@ bookController.addBook = async (req, res, next) => {
 
 //Update details of a specific book by ID. Allow partial updates, and ensure validation is applied to the input data.
 bookController.updateBook = async (req, res, next) => {
-	const { title, author, publicationYear } = req.body;
+  const { id } = req.params;
+  const { title, author, publicationYear } = req.body;
+  const errors = [];
+
 	if (!req.body || Object.keys(req.body).length === 0) {
-		return res.status(400).send('No data provided to update book...');
-	}
+    errors.push('No data provided to update book...');
+    return res.status(400).json({ errors });
+  }
+  //validation to ensure the publication year is not in the future or negative
+  	const currentYear = new Date().getFullYear();
+		if (publicationYear > currentYear || publicationYear < 0) {
+			errors.push('Publication year cannot be in the future or negative...');
+			return res.status(400).json({ errors });
+		}
 
 	try {
 		const book = await Book.findById(id);
