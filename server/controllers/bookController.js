@@ -14,32 +14,46 @@ bookController.getBooks = async (req, res, next) => {
 	try {
 		const books = await Book.find().limit(limit).skip(skipPage);
 		res.locals.books = books;
+    return next();
 	} catch (err) {
 		res.status(400).send('Error retrieving books...', err);
 	}
-	return next();
 };
 
+//Retrieve details of a specific book by ID.
+bookController.getBookById = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).send('Book ID is required...');
+
+  try {
+
+    const book = await Book.findById(id);
+    res.locals.book = book;
+    return next();
+
+  } catch (err) {
+    res.status(400).send('Error retrieving book, check if id is correct...', err);
+  }
+}
+
+//Add a new book to the collection. Implement input validation to ensure all required fields are provided (`title`, `author`, `publicationYear`), and `publicationYear` should be a valid year in the past.
 bookController.addBook = async (req, res, next) => {
 	const { title, author, publicationYear } = req.body;
 
-	if (!title) {
-		return res.status(400).send('Title is required...');
-	}
-	if (!author) {
-		return res.status(400).send('Author is required...');
-	}
-	if (!publicationYear) {
-		return res.status(400).send('Publication year is required...');
-	}
+	if (!title)           return res.status(400).send('Title is required...');
+	if (!author)          return res.status(400).send('Author is required...');
+	if (!publicationYear) return res.status(400).send('Publication year is required...')
 
-  //validation to ensure the publication year is not in the future or negative
+  //ensure the publication year is not in the future or negative
   const currentYear = new Date().getFullYear();
   if (publicationYear > currentYear || publicationYear < 0) {
     return res.status(400).send('Publication year cannot be in the future or negative...');
   }
 
-	try {
+
+  try {
+    
 		const newBook = await Book.create({
 			title,
 			author,
@@ -47,11 +61,13 @@ bookController.addBook = async (req, res, next) => {
 		});
 
 		res.locals.newBook = newBook;
+    return next();
 	} catch (err) {
 		res.status(400).send('Error adding book to database...', err);
-	}
-	return next();
-};
+  }
+
+}
+
 
 
 
