@@ -90,7 +90,10 @@ bookController.updateBook = async (req, res, next) => {
 	try {
 		const book = await Book.findById(id);
 		//if the book does not exist, return an error
-		if (!book) return res.status(400).send('Book does not exist...');
+    if (!book) {
+      errors.push('Book does not exist...')
+      return res.status(400).json({ errors })
+    }
 		//if the book exists, update the fields that are provided in the request body if they are not empty
 		if (title) book.title = title;
 		if (author) book.author = author;
