@@ -7,6 +7,10 @@ router.get('/', bookController.getBooks, (req, res) => {
   res.status(200).json(res.locals.books);
 });
 
+router.get('/search', bookController.searchBooks, (req, res) => {
+  res.status(200).json(res.locals.books);
+});
+
 router.get('/:id', bookController.getBookById, (req, res) => {
   res.status(200).json(res.locals.book);
 });
@@ -21,6 +25,7 @@ router.put('/:id', bookController.updateBook, (req, res) => {
  
 router.delete('/:id', bookController.deleteBook, (req, res) => {
   res.status(200).json(res.locals.deletedBook);
- })
+})
+ 
 
 module.exports = router;
