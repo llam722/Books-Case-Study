@@ -4,11 +4,11 @@ const bookController = {};
 
 //Retrieve a list of all books. Implement pagination to limit the number of books returned per request.
 bookController.getBooks = async (req, res, next) => {
-	// res.status(200).send("This is the books route...");
 	//if a page query parameter is provided, use it to determine which page of books to return, if not, default to the first page
 	const page = parseInt(req.query.page) || 1;
 	//the number of books to return per page, defaulted to 5
 	const limit = parseInt(req.query.limit) || 5;
+	//calculates the amount of pages to skip
 	const skipPage = (page - 1) * limit;
 
 	try {
@@ -16,7 +16,7 @@ bookController.getBooks = async (req, res, next) => {
 		res.locals.books = books;
 		return next();
 	} catch (err) {
-		res.status(400).send('Error retrieving books...');
+		res.status(400).json({ message: 'Error retrieving books...' });
 	}
 };
 
@@ -24,14 +24,14 @@ bookController.getBooks = async (req, res, next) => {
 bookController.getBookById = async (req, res, next) => {
 	const { id } = req.params;
 
-	if (!id) return res.status(400).send('Book ID is required...');
+	if (!id) return res.status(400).json({ message: 'No book ID provided...' });
 
 	try {
 		const book = await Book.findById(id);
 		res.locals.book = book;
 		return next();
 	} catch (err) {
-		res.status(400).send('Error retrieving book, check if id is correct...');
+		res.status(400).json({ message: 'Error retrieving book, check the ID and try again...' });
 	}
 };
 
@@ -42,17 +42,18 @@ bookController.addBook = async (req, res, next) => {
 	//created error array to in case multiple fields are missing
 	const errors = [];
 
-	if (!title || typeof title !== 'string')                    errors.push('Title is required or must be a string...');
-	if (!author || typeof author !== 'string')                  errors.push('Author is missing or must be a string...');
-	if (!publicationYear|| typeof publicationYear !== 'number') errors.push('Publication year is missing or must be a number...');
+	if (!title || typeof title !== 'string') errors.push('Title is required or must be a string...');
+	if (!author || typeof author !== 'string') errors.push('Author is missing or must be a string...');
+	if (!publicationYear || typeof publicationYear !== 'number')
+		errors.push('Publication year is missing or must be a number...');
 
 	if (errors.length > 0) return res.status(400).json({ errors });
 
 	//ensure the publication year is not in the future or negative
 	const currentYear = new Date().getFullYear();
 	if (publicationYear > currentYear || publicationYear < 0) {
-    errors.push('Publication year cannot be in the future or negative...');
-    return res.status(400).json({ errors });
+		errors.push('Publication year cannot be in the future or negative...');
+		return res.status(400).json({ errors });
 	}
 
 	try {
@@ -65,35 +66,34 @@ bookController.addBook = async (req, res, next) => {
 		res.locals.newBook = newBook;
 		return next();
 	} catch (err) {
-		res.status(400).send('Error adding book to database...');
+		res.status(400).json({ message: 'Error adding book to database' });
 	}
 };
 
-
 //Update details of a specific book by ID. Allow partial updates, and ensure validation is applied to the input data.
 bookController.updateBook = async (req, res, next) => {
-  const { id } = req.params;
-  const { title, author, publicationYear } = req.body;
-  const errors = [];
+	const { id } = req.params;
+	const { title, author, publicationYear } = req.body;
+	const errors = [];
 
 	if (!req.body || Object.keys(req.body).length === 0) {
-    errors.push('No data provided to update book...');
-    return res.status(400).json({ errors });
-  }
-  //validation to ensure the publication year is not in the future or negative
-  	const currentYear = new Date().getFullYear();
-		if (publicationYear > currentYear || publicationYear < 0) {
-			errors.push('Publication year cannot be in the future or negative...');
-			return res.status(400).json({ errors });
-		}
+		errors.push('No data provided to update book...');
+		return res.status(400).json({ errors });
+	}
+	//validation to ensure the publication year is not in the future or negative
+	const currentYear = new Date().getFullYear();
+	if (publicationYear > currentYear || publicationYear < 0) {
+		errors.push('Publication year cannot be in the future or negative...');
+		return res.status(400).json({ errors });
+	}
 
 	try {
 		const book = await Book.findById(id);
 		//if the book does not exist, return an error
-    if (!book) {
-      errors.push('Book does not exist...')
-      return res.status(400).json({ errors })
-    }
+		if (!book) {
+			errors.push('Book does not exist...');
+			return res.status(400).json({ errors });
+		}
 		//if the book exists, update the fields that are provided in the request body if they are not empty
 		if (title) book.title = title;
 		if (author) book.author = author;
@@ -105,7 +105,7 @@ bookController.updateBook = async (req, res, next) => {
 
 		return next();
 	} catch (err) {
-		res.status(400).send('Error updating book...');
+		res.status(400).json({ message: 'Error updating book, check the ID and try again...' });
 	}
 };
 
