@@ -73,22 +73,22 @@ bookController.addBook = async (req, res, next) => {
 //Update details of a specific book by ID. Allow partial updates, and ensure validation is applied to the input data.
 bookController.updateBook = async (req, res, next) => {
 	const { id } = req.params;
-	const { title, author, publicationYear } = req.body;
+  const { title, author, publicationYear } = req.body;
 	const errors = [];
-
+  
 	if (!req.body || Object.keys(req.body).length === 0) {
-		errors.push('No data provided to update book...');
+    errors.push('No data provided to update book...');
 		return res.status(400).json({ errors });
 	}
 	//validation to ensure the publication year is not in the future or negative
 	const currentYear = new Date().getFullYear();
 	if (publicationYear > currentYear || publicationYear < 0) {
-		errors.push('Publication year cannot be in the future or negative...');
+    errors.push('Publication year cannot be in the future or negative...');
 		return res.status(400).json({ errors });
 	}
-
+  
 	try {
-		const book = await Book.findById(id);
+    const book = await Book.findById(id);
 		//if the book does not exist, return an error
 		if (!book) {
 			errors.push('Book does not exist...');
@@ -108,5 +108,29 @@ bookController.updateBook = async (req, res, next) => {
 		res.status(400).json({ message: 'Error updating book, check the ID and try again...' });
 	}
 };
+
+bookController.deleteBook = async (req, res, next) => {
+  const { id } = req.params;
+  const errors = [];
+  if (!id) {
+    errors.push('No book ID provided...');
+    return res.status(400).json({ errors });
+  }
+  
+  try {
+    const book = await Book.findById(id);
+    if (!book) {
+      errors.push('Book does not exist...');
+      return res.status(400).json({ errors });
+    }
+    const deletedBook = await book.findOneAndDelete();
+    res.locals.deletedBook = deletedBook;
+
+    return next();
+  } catch (err) {
+    res.status(400).json({ message: 'Error deleting book, check the ID and try again...' });
+  }
+
+ };
 
 module.exports = bookController;
