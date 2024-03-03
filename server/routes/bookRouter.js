@@ -15,6 +15,8 @@ router.post('/', bookController.addBook, (req, res) => {
   res.status(201).json(res.locals.newBook);
 });
  
-// router.put('/:id', )
+router.put('/:id', bookController.updateBook, (req, res) => {
+  res.status(200).json(res.locals.updatedBook);
+ });
 
 module.exports = router;
