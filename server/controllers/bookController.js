@@ -13,10 +13,11 @@ bookController.getBooks = async (req, res, next) => {
 
 	try {
 		const books = await Book.find().limit(limit).skip(skipPage);
+		if (books.length === 0) return res.status(204).json({ message: 'No books found...' });
 		res.locals.books = books;
 		return next();
 	} catch (err) {
-		res.status(400).json({ message: 'Error retrieving books...' });
+		res.status(500).json({ message: 'Error retrieving books...' });
 	}
 };
 
@@ -28,10 +29,11 @@ bookController.getBookById = async (req, res, next) => {
 
 	try {
 		const book = await Book.findById(id);
+    if (!book) return res.status(404).json({ message: 'Book does not exist, check the ID and try again...' });
 		res.locals.book = book;
 		return next();
 	} catch (err) {
-		res.status(400).json({ message: 'Error retrieving book, check the ID and try again...' });
+		res.status(500).json({ message: 'Error retrieving book, check the ID and try again...' });
 	}
 };
 
@@ -66,7 +68,7 @@ bookController.addBook = async (req, res, next) => {
 		res.locals.newBook = newBook;
 		return next();
 	} catch (err) {
-		res.status(400).json({ message: 'Error adding book to database' });
+		res.status(500).json({ message: 'Error adding book to database' });
 	}
 };
 
@@ -92,7 +94,7 @@ bookController.updateBook = async (req, res, next) => {
 		//if the book does not exist, return an error
 		if (!book) {
 			errors.push('Book does not exist...');
-			return res.status(400).json({ errors });
+			return res.status(404).json({ errors });
 		}
 		//if the book exists, update the fields that are provided in the request body if they are not empty
 		if (title) book.title = title;
@@ -105,12 +107,12 @@ bookController.updateBook = async (req, res, next) => {
 
 		return next();
 	} catch (err) {
-		res.status(400).json({ message: 'Error updating book, check the ID and try again...' });
+		res.status(500).json({ message: 'Error updating book, check the ID and try again...' });
 	}
 };
 
 bookController.deleteBook = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.body;
   const errors = [];
   if (!id) {
     errors.push('No book ID provided...');
@@ -120,17 +122,18 @@ bookController.deleteBook = async (req, res, next) => {
   try {
     const book = await Book.findById(id);
     if (!book) {
-      errors.push('Book does not exist...');
-      return res.status(400).json({ errors });
+      errors.push('Book does not exist, check the ID and try again...');
+      return res.status(404).json({ errors });
     }
-    const deletedBook = await book.findOneAndDelete();
+
+    const deletedBook = await Book.findByIdAndDelete(id);
     res.locals.deletedBook = deletedBook;
 
     return next();
   } catch (err) {
-    res.status(400).json({ message: 'Error deleting book, check the ID and try again...' });
+    res.status(500).json({ message: 'Error deleting book, check the ID and try again...' });
   }
 
- };
+};
 
 module.exports = bookController;
