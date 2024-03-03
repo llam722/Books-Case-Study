@@ -90,7 +90,7 @@ bookController.updateBook = async (req, res, next) => {
 	}
   
 	try {
-    const book = await Book.findById(id);
+    const book = await Book.findByIdAndUpdate(id);
 		//if the book does not exist, return an error
 		if (!book) {
 			errors.push('Book does not exist...');
@@ -133,6 +133,34 @@ bookController.deleteBook = async (req, res, next) => {
   } catch (err) {
     res.status(500).json({ message: 'Error deleting book, check the ID and try again...' });
   }
+
+};
+
+//Implement search functionality to allow users to search for books by title or author, (added publication year)
+bookController.searchBooks = async (req, res, next) => {
+	//to be defined depending on the search parameters provided
+	let query;
+	const { title, author, publicationYear } = req.query;
+	const errors = [];
+	if (!title && !author && !publicationYear) {
+		errors.push('No search parameters provided, enter a title, author or publication year to search...');
+		return res.status(400).json({ errors });
+	}
+
+	try {
+		//search by title, matches all books with case insensitive title
+		if (title) query = await Book.find({ title: { $regex: title, $options: 'i' } });
+		//search by author, " "
+		if (author) query = await Book.find({ author: { $regex: author, $options: 'i' } });
+		//search by publication year
+		if (publicationYear) query = await Book.find({ publicationYear: publicationYear });
+		
+		res.locals.query = query;
+		return next();
+
+	} catch (err) {
+		res.status(500).json({ message: 'Error searching for books...' });
+	}
 
 };
 
