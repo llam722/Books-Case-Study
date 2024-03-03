@@ -29,7 +29,7 @@ bookController.getBookById = async (req, res, next) => {
 
 	try {
 		const book = await Book.findById(id);
-    if (!book) return res.status(404).json({ message: 'Book does not exist, check the ID and try again...' });
+		if (!book) return res.status(404).json({ message: 'Book does not exist, check the ID and try again...' });
 		res.locals.book = book;
 		return next();
 	} catch (err) {
@@ -75,22 +75,22 @@ bookController.addBook = async (req, res, next) => {
 //Update details of a specific book by ID. Allow partial updates, and ensure validation is applied to the input data.
 bookController.updateBook = async (req, res, next) => {
 	const { id } = req.params;
-  const { title, author, publicationYear } = req.body;
+	const { title, author, publicationYear } = req.body;
 	const errors = [];
-  
+
 	if (!req.body || Object.keys(req.body).length === 0) {
-    errors.push('No data provided to update book...');
+		errors.push('No data provided to update book...');
 		return res.status(400).json({ errors });
 	}
 	//validation to ensure the publication year is not in the future or negative
 	const currentYear = new Date().getFullYear();
 	if (publicationYear > currentYear || publicationYear < 0) {
-    errors.push('Publication year cannot be in the future or negative...');
+		errors.push('Publication year cannot be in the future or negative...');
 		return res.status(400).json({ errors });
 	}
-  
+
 	try {
-    const book = await Book.findByIdAndUpdate(id);
+		const book = await Book.findByIdAndUpdate(id);
 		//if the book does not exist, return an error
 		if (!book) {
 			errors.push('Book does not exist...');
@@ -112,28 +112,27 @@ bookController.updateBook = async (req, res, next) => {
 };
 
 bookController.deleteBook = async (req, res, next) => {
-  const { id } = req.body;
-  const errors = [];
-  if (!id) {
-    errors.push('No book ID provided...');
-    return res.status(400).json({ errors });
-  }
-  
-  try {
-    const book = await Book.findById(id);
-    if (!book) {
-      errors.push('Book does not exist, check the ID and try again...');
-      return res.status(404).json({ errors });
-    }
+	const { id } = req.body;
+	const errors = [];
+	if (!id) {
+		errors.push('No book ID provided...');
+		return res.status(400).json({ errors });
+	}
 
-    const deletedBook = await Book.findByIdAndDelete(id);
-    res.locals.deletedBook = deletedBook;
+	try {
+		const book = await Book.findById(id);
+		if (!book) {
+			errors.push('Book does not exist, check the ID and try again...');
+			return res.status(404).json({ errors });
+		}
 
-    return next();
-  } catch (err) {
-    res.status(500).json({ message: 'Error deleting book, check the ID and try again...' });
-  }
+		const deletedBook = await Book.findByIdAndDelete(id);
+		res.locals.deletedBook = deletedBook;
 
+		return next();
+	} catch (err) {
+		res.status(500).json({ message: 'Error deleting book, check the ID and try again...' });
+	}
 };
 
 //Implement search functionality to allow users to search for books by title or author
@@ -148,17 +147,43 @@ bookController.searchBooks = async (req, res, next) => {
 
 	try {
 		//use mongoDB's conditional $or operator and $regex operator to perform a case insensitive search
-		const query = {$or: [{ title: { $regex: q, $options: 'i' } }, { author: { $regex: q, $options: 'i' } }]};
+		const query = { $or: [{ title: { $regex: q, $options: 'i' } }, { author: { $regex: q, $options: 'i' } }] };
 		//search by title, matches all books with case insensitive title
 		const books = await Book.find(query);
 
 		res.locals.books = books;
 		return next();
-
 	} catch (err) {
 		res.status(500).json({ message: 'Error searching for books...' });
 	}
-
 };
 
+
+bookController.getStats = async (req, res, next) => {
+	const stats = {};
+	try {
+		//get the total number of books
+		const totalBooks = await Book.countDocuments();
+		stats.totalBooks = totalBooks;
+		
+		//get the earliest publication year of all books
+		const earliestPublicationYear = await Book.aggregate([{ $group: { _id: null, min: { $min: '$publicationYear' } } }]);
+		stats.earliestPublicationYear = earliestPublicationYear[0].min;
+		
+		//get the latest publication year of all books
+		const latestPublicationYear = await Book.aggregate([{ $group: { _id: null, max: { $max: '$publicationYear' } } }]);
+		stats.latestPublicationYear = latestPublicationYear[0].max;
+
+		//returns an array with the number of books for each author, sorted in descending order
+		const booksByAuthor = await Book.aggregate([{ $group: { _id: '$author', books: { $sum: 1 } } }, { $sort: { books: -1 } }]);
+		stats.booksByAuthor = booksByAuthor;
+		
+		res.locals.stats = stats;
+		
+		return next();
+	} catch (err) {
+		res.status(500).json({ message: 'Error retrieving stats...' });
+	}
+
+}
 module.exports = bookController;
