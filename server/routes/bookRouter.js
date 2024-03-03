@@ -17,6 +17,10 @@ router.post('/', bookController.addBook, (req, res) => {
  
 router.put('/:id', bookController.updateBook, (req, res) => {
   res.status(200).json(res.locals.updatedBook);
- });
+});
+ 
+router.delete('/:id', bookController.deleteBook, (req, res) => {
+  res.status(200).json(res.locals.deletedBook);
+ })
 
 module.exports = router;
