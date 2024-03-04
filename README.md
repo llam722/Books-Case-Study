@@ -1,9 +1,9 @@
 # Louis Lam Erewhon-Case-Study (Spring 2024)
 
 ## Setup instructions
-1. Install all dependencies by typing ```"npm install"``` in the terminal.
+1. Install all dependencies by typing ```npm install``` in the terminal.
 2. Download an app like <a href='https://www.postman.com/'> Postman </a> to simulate API requests.
-3. After installing the dependencies, type ```"npm start"``` to start the server locally and connect to my MongoDB database.
+3. After installing the dependencies, type ```npm start``` to start the server locally and connect to my MongoDB database.
 <br/>
 
 <em>If the server is not starting even with alternative ports, make sure to type `killall node` in your terminal to stop other instances from interefering.</em>
