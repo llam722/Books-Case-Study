@@ -10,34 +10,34 @@ router.get('/', bookController.getBooks, (req, res) => {
 });
 
 //get request to retrieve book collection stats
+router.get('/stats', bookController.getStats, (req, res) => {
+	res.status(200).json(res.locals.stats);
+});
+
+//get request to search for books by title or author
 router.get(
-	'/stats',
-  //validate and sanitize the query parameter and limit the length to 100 characters
-  [
+	'/search',
+	//validate and sanitize the query parameter and limit the length to 100 characters
+	[
 		query('q')
 			.trim()
 			.notEmpty()
-			.withMessage('No search parameters provided, please enter a query...')
+			.withMessage('Invalid query, please check and try again...')
 			.escape()
-			.isLength({ min: 1, max: 100 }),
-  ],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    return next();
-  },
-	bookController.getStats,
+			.isLength({ min: 1, max: 100 }).withMessage('Search query must be between 1 to 100 characters...'),
+	],
+	(req, res, next) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+		return next();
+	},
+	bookController.searchBooks,
 	(req, res) => {
-		res.status(200).json(res.locals.stats);
+		res.status(200).json(res.locals.books);
 	}
 );
-
-//get request to search for books by title or author
-router.get('/search', bookController.searchBooks, (req, res) => {
-	res.status(200).json(res.locals.books);
-});
 
 //get request to retrieve a specific book by ID
 router.get(
