@@ -1,5 +1,5 @@
 import express from 'express';
-import { body, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
 import bookController from '../controllers/bookController.js';
 
 const router = express.Router();
@@ -20,9 +20,25 @@ router.get('/search', bookController.searchBooks, (req, res) => {
 });
 
 //get request to retrieve a specific book by ID
-router.get('/:id', bookController.getBookById, (req, res) => {
-	res.status(200).json(res.locals.book);
-});
+router.get(
+	'/:id',
+	[
+		//check if the id is a valid MongoDB ObjectId
+		param('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
+	],
+	(req, res, next) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+		return next();
+	},
+	//invoke the getBookById method from the bookController
+	bookController.getBookById,
+	(req, res) => {
+		res.status(200).json(res.locals.book);
+	}
+);
 
 //post request to add a new book to the collection
 router.post(
@@ -45,7 +61,7 @@ router.post(
 		}
 		return next();
 	},
-
+	//if validated, invoke the addBook method from the bookController
 	bookController.addBook,
 	(req, res) => {
 		res.status(201).json(res.locals.newBook);
@@ -53,13 +69,53 @@ router.post(
 );
 
 //put request to update a specific book by ID
-router.put('/:id', bookController.updateBook, (req, res) => {
-	res.status(200).json(res.locals.updatedBook);
-});
+router.put(
+	'/:id',
+	//validate the request body
+	[
+		//only validate the fields that are provided, since we don't want to require all fields to be updated
+		body('title').optional().trim().notEmpty().withMessage('Title is required').escape(),
+		body('author').optional().trim().notEmpty().withMessage('Author is required').escape(),
+		body('publicationYear')
+			.optional()
+			.isInt({ min: 1, max: new Date().getFullYear() }) //validates publication year
+			.withMessage('Publication year is required and must be a valid year') //error message if invalid
+			.toInt(), //converts the value to an integer
+	],
+	//check for validation errors
+	(req, res, next) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+		return next();
+	},
+	//if validated, invoke the updateBook method from the bookController
+	bookController.updateBook,
+	(req, res) => {
+		res.status(200).json(res.locals.updatedBook);
+	}
+);
 
 //delete request to delete a specific book by ID
-router.delete('/:id', bookController.deleteBook, (req, res) => {
-	res.status(200).json(res.locals.deletedBook);
-});
+router.delete(
+	'/:id',
+	[
+		//check if the id is a valid MongoDB ObjectId
+		param('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    return next();
+  },
+	//invoke the deleteBook method from the bookController
+	bookController.deleteBook,
+	(req, res) => {
+		res.status(200).json(res.locals.deletedBook);
+	}
+);
 
 export default router;
