@@ -3,30 +3,37 @@ import bookController from '../controllers/bookController.js';
 
 const router = express.Router();
 
+//get request to retrieve all books
 router.get('/', bookController.getBooks, (req, res) => {
 	res.status(200).json(res.locals.books);
 });
 
+//get request to retrieve book collection stats
 router.get('/stats', bookController.getStats, (req, res) => {
 	res.status(200).json(res.locals.stats);
 });
 
+//get request to search for books by title or author
 router.get('/search', bookController.searchBooks, (req, res) => {
 	res.status(200).json(res.locals.books);
 });
 
+//get request to retrieve a specific book by ID
 router.get('/:id', bookController.getBookById, (req, res) => {
 	res.status(200).json(res.locals.book);
 });
 
+//post request to add a new book to the collection
 router.post('/', bookController.addBook, (req, res) => {
 	res.status(201).json(res.locals.newBook);
 });
 
+//put request to update a specific book by ID
 router.put('/:id', bookController.updateBook, (req, res) => {
 	res.status(200).json(res.locals.updatedBook);
 });
 
+//delete request to delete a specific book by ID
 router.delete('/:id', bookController.deleteBook, (req, res) => {
 	res.status(200).json(res.locals.deletedBook);
 });
