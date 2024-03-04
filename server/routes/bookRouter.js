@@ -1,5 +1,5 @@
 import express from 'express';
-import { body, param, validationResult } from 'express-validator';
+import { body, param, query, validationResult } from 'express-validator';
 import bookController from '../controllers/bookController.js';
 
 const router = express.Router();
@@ -10,9 +10,29 @@ router.get('/', bookController.getBooks, (req, res) => {
 });
 
 //get request to retrieve book collection stats
-router.get('/stats', bookController.getStats, (req, res) => {
-	res.status(200).json(res.locals.stats);
-});
+router.get(
+	'/stats',
+  //validate and sanitize the query parameter and limit the length to 100 characters
+  [
+		query('q')
+			.trim()
+			.notEmpty()
+			.withMessage('No search parameters provided, please enter a query...')
+			.escape()
+			.isLength({ min: 1, max: 100 }),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    return next();
+  },
+	bookController.getStats,
+	(req, res) => {
+		res.status(200).json(res.locals.stats);
+	}
+);
 
 //get request to search for books by title or author
 router.get('/search', bookController.searchBooks, (req, res) => {
@@ -72,9 +92,9 @@ router.post(
 router.put(
 	'/:id',
 	//validate the request body
-  [
-    //check if the id is a valid MongoDB ObjectId
-    params('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
+	[
+		//check if the id is a valid MongoDB ObjectId, this field is NOT optional
+		param('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
 		//only validate the fields that are provided, since we don't want to require all fields to be updated
 		body('title').optional().trim().notEmpty().withMessage('Title is required').escape(),
 		body('author').optional().trim().notEmpty().withMessage('Author is required').escape(),
@@ -105,14 +125,14 @@ router.delete(
 	[
 		//check if the id is a valid MongoDB ObjectId
 		param('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
-  ],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    return next();
-  },
+	],
+	(req, res, next) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+		return next();
+	},
 	//invoke the deleteBook method from the bookController
 	bookController.deleteBook,
 	(req, res) => {
