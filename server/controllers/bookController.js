@@ -189,6 +189,7 @@ bookController.getStats = async (req, res, next) => {
 		const booksByAuthor = await Book.aggregate([
 			{ $group: { _id: '$author', books: { $sum: 1 } } },
 			{ $sort: { books: -1 } },
+			{ $project: { author: '$_id', books: 1, _id: 0 } }
 		]);
 		stats.booksByAuthor = booksByAuthor;
 
