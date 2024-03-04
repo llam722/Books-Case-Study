@@ -72,7 +72,9 @@ router.post(
 router.put(
 	'/:id',
 	//validate the request body
-	[
+  [
+    //check if the id is a valid MongoDB ObjectId
+    params('id').isMongoId().withMessage('Invalid book ID, please check and try again...'),
 		//only validate the fields that are provided, since we don't want to require all fields to be updated
 		body('title').optional().trim().notEmpty().withMessage('Title is required').escape(),
 		body('author').optional().trim().notEmpty().withMessage('Author is required').escape(),
