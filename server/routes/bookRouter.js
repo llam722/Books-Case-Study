@@ -1,5 +1,4 @@
 import express from 'express';
-import { body, param, query, validationResult } from 'express-validator';
 import bookController from '../controllers/bookController.js';
 import {
 	validateBookId,
