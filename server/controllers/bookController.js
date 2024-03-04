@@ -1,4 +1,4 @@
-const { Book } = require('../models/bookModel');
+import { Book } from '../models/bookModel.js';
 
 const bookController = {};
 
@@ -158,32 +158,35 @@ bookController.searchBooks = async (req, res, next) => {
 	}
 };
 
-
 bookController.getStats = async (req, res, next) => {
 	const stats = {};
 	try {
 		//get the total number of books
 		const totalBooks = await Book.countDocuments();
 		stats.totalBooks = totalBooks;
-		
+
 		//get the earliest publication year of all books
-		const earliestPublicationYear = await Book.aggregate([{ $group: { _id: null, min: { $min: '$publicationYear' } } }]);
+		const earliestPublicationYear = await Book.aggregate([
+			{ $group: { _id: null, min: { $min: '$publicationYear' } } },
+		]);
 		stats.earliestPublicationYear = earliestPublicationYear[0].min;
-		
+
 		//get the latest publication year of all books
 		const latestPublicationYear = await Book.aggregate([{ $group: { _id: null, max: { $max: '$publicationYear' } } }]);
 		stats.latestPublicationYear = latestPublicationYear[0].max;
 
 		//returns an array with the number of books for each author, sorted in descending order
-		const booksByAuthor = await Book.aggregate([{ $group: { _id: '$author', books: { $sum: 1 } } }, { $sort: { books: -1 } }]);
+		const booksByAuthor = await Book.aggregate([
+			{ $group: { _id: '$author', books: { $sum: 1 } } },
+			{ $sort: { books: -1 } },
+		]);
 		stats.booksByAuthor = booksByAuthor;
-		
+
 		res.locals.stats = stats;
-		
+
 		return next();
 	} catch (err) {
 		res.status(500).json({ message: 'Error retrieving stats...' });
 	}
-
-}
-module.exports = bookController;
+};
+export default bookController;

@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+
+
 const Schema = mongoose.Schema;
 
 const DB_URI =
@@ -22,8 +24,4 @@ mongoose
     publicationYear: { type: Number, required: true },
   });
 
-  const Book = mongoose.model("book", bookSchema);
-  
-module.exports = {
-  Book
-}
+export const Book = mongoose.model("Book", bookSchema);
