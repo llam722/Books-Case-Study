@@ -12,7 +12,9 @@ bookController.getBooks = async (req, res, next) => {
 	const skipPage = (page - 1) * limit;
 
 	try {
+		//find all books, limit the number of books returned to the limit, and skip the amount of books based on the page number
 		const books = await Book.find().limit(limit).skip(skipPage);
+		//if no books are found, return a 204 status code meaning no content
 		if (books.length === 0) return res.status(204).json({ message: 'No books found...' });
 		res.locals.books = books;
 		return next();
@@ -28,7 +30,9 @@ bookController.getBookById = async (req, res, next) => {
 	if (!id) return res.status(400).json({ message: 'No book ID provided...' });
 
 	try {
+		//find the book by the provided ID
 		const book = await Book.findById(id);
+		//if the book does not exist, return a 404 status code meaning not found
 		if (!book) return res.status(404).json({ message: 'Book does not exist, check the ID and try again...' });
 		res.locals.book = book;
 		return next();
@@ -44,11 +48,13 @@ bookController.addBook = async (req, res, next) => {
 	//created error array to in case multiple fields are missing
 	const errors = [];
 
+	//if any of the fields are missing or not of the correct type, add an error to the errors array
 	if (!title || typeof title !== 'string') errors.push('Title is required or must be a string...');
 	if (!author || typeof author !== 'string') errors.push('Author is missing or must be a string...');
 	if (!publicationYear || typeof publicationYear !== 'number')
 		errors.push('Publication year is missing or must be a number...');
 
+	//if there are any errors, return a 400 status code meaning bad request
 	if (errors.length > 0) return res.status(400).json({ errors });
 
 	//ensure the publication year is not in the future or negative
@@ -59,6 +65,7 @@ bookController.addBook = async (req, res, next) => {
 	}
 
 	try {
+		//create a new book with the provided fields
 		const newBook = await Book.create({
 			title,
 			author,
@@ -78,11 +85,12 @@ bookController.updateBook = async (req, res, next) => {
 	const { title, author, publicationYear } = req.body;
 	const errors = [];
 
+	//if no data or an empty object is provided, return an error
 	if (!req.body || Object.keys(req.body).length === 0) {
 		errors.push('No data provided to update book...');
 		return res.status(400).json({ errors });
 	}
-	//validation to ensure the publication year is not in the future or negative
+	//implement same validation as addBook for publicationYear
 	const currentYear = new Date().getFullYear();
 	if (publicationYear > currentYear || publicationYear < 0) {
 		errors.push('Publication year cannot be in the future or negative...');
@@ -111,6 +119,7 @@ bookController.updateBook = async (req, res, next) => {
 	}
 };
 
+//Delete a specific book by ID.
 bookController.deleteBook = async (req, res, next) => {
 	const { id } = req.body;
 	const errors = [];
@@ -121,11 +130,12 @@ bookController.deleteBook = async (req, res, next) => {
 
 	try {
 		const book = await Book.findById(id);
+		//handles the case where the book does not exist
 		if (!book) {
 			errors.push('Book does not exist, check the ID and try again...');
 			return res.status(404).json({ errors });
 		}
-
+		//if the book exists, delete it from the database and return the deleted book (in case the user wants to undo the delete operation)
 		const deletedBook = await Book.findByIdAndDelete(id);
 		res.locals.deletedBook = deletedBook;
 
@@ -175,7 +185,7 @@ bookController.getStats = async (req, res, next) => {
 		const latestPublicationYear = await Book.aggregate([{ $group: { _id: null, max: { $max: '$publicationYear' } } }]);
 		stats.latestPublicationYear = latestPublicationYear[0].max;
 
-		//returns an array with the number of books for each author, sorted in descending order
+		//add functionality for an array with the number of books for each author, sorted in descending order
 		const booksByAuthor = await Book.aggregate([
 			{ $group: { _id: '$author', books: { $sum: 1 } } },
 			{ $sort: { books: -1 } },
