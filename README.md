@@ -5,7 +5,7 @@
 2. Download an app like <a href='https://www.postman.com/'> Postman </a> to simulate API requests.
 3. After installing the dependencies, type ```"npm start"``` to start the server locally and connect to my MongoDB database.
 <br/>
-*If the server is not starting even with alternative ports, make sure to type ```"killall node"``` in your terminal to stop other instances from interefering.*
+<em>If the server is not starting even with alternative ports, make sure to type ```killall node``` in your terminal to stop other instances from interefering.</em>
 
 4. When the server is running and connected to the DB, it will look like this:
 
