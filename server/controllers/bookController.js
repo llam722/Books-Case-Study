@@ -121,7 +121,7 @@ bookController.updateBook = async (req, res, next) => {
 
 //Delete a specific book by ID.
 bookController.deleteBook = async (req, res, next) => {
-	const { id } = req.body;
+	const { id } = req.params;
 	const errors = [];
 	if (!id) {
 		errors.push('No book ID provided...');
