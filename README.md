@@ -21,7 +21,7 @@
 
 <br/>
 
-*  ****Here's another example with ```localhost:3000/books/stats```***
+*  ***Here's another example with ```localhost:3000/books/stats```***
 
 <br/>
 
