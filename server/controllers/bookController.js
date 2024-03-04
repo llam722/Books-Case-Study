@@ -174,6 +174,10 @@ bookController.getStats = async (req, res, next) => {
 		//get the total number of books
 		const totalBooks = await Book.countDocuments();
 		stats.totalBooks = totalBooks;
+		
+		//get the total number of authors
+		const numOfAuthors = await Book.distinct('author');
+		stats.numOfAuthors = numOfAuthors.length;
 
 		//get the earliest publication year of all books
 		const earliestPublicationYear = await Book.aggregate([
@@ -187,7 +191,7 @@ bookController.getStats = async (req, res, next) => {
 
 		//add functionality to aggregate and return an array with the number of books for each author, sorted in descending order
 		const booksByAuthor = await Book.aggregate([
-			{ $group: { _id: '$author', books: { $sum: 1 } } },
+			{ $group: { _id: '$author', books: { $sum: 1 }, authors: { $sum: 1} } },
 			{ $sort: { books: -1 } },
 			{ $project: { author: '$_id', books: 1, _id: 0 } }
 		]);
