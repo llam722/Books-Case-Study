@@ -185,7 +185,7 @@ bookController.getStats = async (req, res, next) => {
 		const latestPublicationYear = await Book.aggregate([{ $group: { _id: null, max: { $max: '$publicationYear' } } }]);
 		stats.latestPublicationYear = latestPublicationYear[0].max;
 
-		//add functionality for an array with the number of books for each author, sorted in descending order
+		//add functionality to aggregate and return an array with the number of books for each author, sorted in descending order
 		const booksByAuthor = await Book.aggregate([
 			{ $group: { _id: '$author', books: { $sum: 1 } } },
 			{ $sort: { books: -1 } },
