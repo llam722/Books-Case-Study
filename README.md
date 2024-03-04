@@ -8,6 +8,7 @@
 
 <em>If the server is not starting even with alternative ports, make sure to type `killall node` in your terminal to stop other instances from interefering.</em>
 
+
 4. When the server is running and connected to the DB, it will look like this:
 
       <img src='./public/server_start.png'/>
