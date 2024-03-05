@@ -17,6 +17,10 @@
 
       <img src='./public/server_start.png'/>
 
+6. Run unit and integration tests with `npm test` 
+
+    <img src='./public/tests.png'/>
+
 ## Testing Routes with Postman (example)
 
 1. Start by typing in the address of the server ```localhost:3000/books``` and replace 3000 with other port numbers if needed
