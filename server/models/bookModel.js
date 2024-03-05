@@ -1,10 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 //mongodb URI for connecting to the database, hardcoded for now, but should be stored in an environment variable (.env) for security
 const DB_URI =
-  "mongodb+srv://louislam7229:weyGIDgLqyE1CIDc@erewhon.qdpiolq.mongodb.net/?retryWrites=true&w=majority&appName=Erewhon";
-
+  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@erewhon.qdpiolq.mongodb.net/?retryWrites=true&w=majority&appName=Erewhon`;
 //connect to the database
 mongoose
   .connect(DB_URI, {
