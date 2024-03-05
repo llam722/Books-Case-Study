@@ -429,5 +429,20 @@ describe('Book Controller', () => {
       expect(res.json).toHaveBeenCalledWith({ message: 'Error updating book, check the ID and try again...' });
     });
 
-	});
+  });
+  
+  describe('deleteBook', () => {
+
+    it('deletes a book by ID', async () => {
+      req.params.id = 1;
+
+      jest.spyOn(Book, 'findByIdAndDelete').mockResolvedValue({ title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', publicationYear: 1925 });
+
+      const expected = { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', publicationYear: 1925 };
+      await container.deleteBook(req, res, next);
+
+      expect(res.locals.deletedBook).toEqual(expected);
+    });
+
+  });
 });

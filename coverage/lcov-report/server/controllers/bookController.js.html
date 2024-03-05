@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.15% </span>
+                <span class="strong">85.43% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>161/206</span>
+                <span class='fraction'>176/206</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.14% </span>
+                <span class="strong">89.74% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>34/35</span>
+                <span class='fraction'>35/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">71.42% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/7</span>
+                <span class='fraction'>6/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.15% </span>
+                <span class="strong">85.43% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>161/206</span>
+                <span class='fraction'>176/206</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -391,29 +391,29 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -596,30 +596,30 @@ bookController.updateBook = async (req, res, next) =&gt; {
 };
 &nbsp;
 //Delete a specific book by ID.
-bookController.deleteBook = <span class="fstat-no" title="function not covered" >async (req, res, next) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >	const { id } = req.params;</span>
-<span class="cstat-no" title="statement not covered" >	const errors = [];</span>
-<span class="cstat-no" title="statement not covered" >	if (!id) {</span>
+bookController.deleteBook = async (req, res, next) =&gt; {
+	const { id } = req.params;
+	const errors = [];
+	if (!id) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >		errors.push('No book ID provided...');</span>
 <span class="cstat-no" title="statement not covered" >		return res.status(400).json({ errors });</span>
 <span class="cstat-no" title="statement not covered" >	}</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >	try {</span>
-<span class="cstat-no" title="statement not covered" >		const book = await Book.findById(id);</span>
-<span class="cstat-no" title="statement not covered" >		//handles the case where the book does not exist</span>
-<span class="cstat-no" title="statement not covered" >		if (!book) {</span>
+&nbsp;
+	try {
+		// const book = await Book.findById(id);
+		//if the book exists, delete it from the database and return the deleted book (in case the user wants to undo the delete operation)
+		const deletedBook = await Book.findByIdAndDelete(id);
+		//handles the case where the book does not exist
+		if (!deletedBook) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >			errors.push('Book does not exist, check the ID and try again...');</span>
 <span class="cstat-no" title="statement not covered" >			return res.status(404).json({ errors });</span>
 <span class="cstat-no" title="statement not covered" >		}</span>
-<span class="cstat-no" title="statement not covered" >		//if the book exists, delete it from the database and return the deleted book (in case the user wants to undo the delete operation)</span>
-<span class="cstat-no" title="statement not covered" >		const deletedBook = await Book.findByIdAndDelete(id);</span>
-<span class="cstat-no" title="statement not covered" >		res.locals.deletedBook = deletedBook;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >		return next();</span>
-<span class="cstat-no" title="statement not covered" >	} catch (err) {</span>
+		res.locals.deletedBook = deletedBook;
+&nbsp;
+		return next();
+	} <span class="branch-0 cbranch-no" title="branch not covered" >catch (err) {</span>
 <span class="cstat-no" title="statement not covered" >		res.status(500).json({ message: 'Error deleting book, check the ID and try again...' });</span>
 <span class="cstat-no" title="statement not covered" >	}</span>
-<span class="cstat-no" title="statement not covered" >};</span>
+};
 &nbsp;
 //Implement search functionality to allow users to search for books by title or author
 bookController.searchBooks = <span class="fstat-no" title="function not covered" >async (req, res, next) =&gt; {</span>
@@ -688,7 +688,7 @@ export default bookController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-05T07:51:57.274Z
+                at 2024-03-05T08:04:37.231Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
