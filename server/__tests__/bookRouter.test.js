@@ -45,8 +45,6 @@ describe('GET /books/:id', () => {
 	it('should return book at id', async () => {
 		const id = '65e547eb27770bd1653352c3';
 		const response = await request(server).get(`/books/${id}`);
-		
-		console.log(response.body)
     
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toBeInstanceOf(Object);
@@ -56,15 +54,3 @@ describe('GET /books/:id', () => {
 	});
 });
 
-
-/*
-[
-    {
-        "_id": "65e547eb27770bd1653352c3",
-        "title": "The Silver Chair",
-        "author": "C.S. Lewis",
-        "publicationYear": 1953,
-        "__v": 0
-    }
-]
-*/
