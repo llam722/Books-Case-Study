@@ -25,7 +25,3 @@ mongoose
   
   export const Book = mongoose.model("Book", bookSchema);
   
-  export const loadData = () => {
-  //create a new schema for the book model
-  return mongoose.model("Book", bookSchema);
- }
