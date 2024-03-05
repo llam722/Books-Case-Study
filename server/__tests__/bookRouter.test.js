@@ -19,10 +19,6 @@ const getData = () => {
 describe('GET /books', () => {
 	it('should return an array of books', async () => {
 
-		Books.find()
-
-		expect(Books.find).toHaveBeenCalled()
-
 		const response = await request(server).get('/books');
 
 		expect(response.statusCode).toBe(200);

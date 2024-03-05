@@ -72,7 +72,6 @@ describe('Book Controller', () => {
     });
     
     it('returns a 204 status code if books are not found', async () => {
-      // Arrange
       loadData.mockResolvedValue({
         find: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
@@ -102,7 +101,7 @@ describe('Book Controller', () => {
     it('should throw an error', async () => {
       res = {
         status: jest.fn().mockReturnValue({
-          json: jest.fn().mockReturnValue({ message: 'No books found...' }),
+          json: jest.fn().mockReturnValue({ message: 'Error retrieving books...' }),
         }),
         locals: {},
       };
