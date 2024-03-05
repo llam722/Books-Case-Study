@@ -33,6 +33,7 @@ describe('Book Controller', () => {
 		jest.clearAllMocks();
 	});
 
+  //GET BOOKS
 	describe('getBooks', () => {
 		it('should grab all books', async () => {
 			jest.spyOn(Book, 'find').mockReturnValue({
@@ -111,6 +112,7 @@ describe('Book Controller', () => {
 		});
 	});
 
+  //GET BOOK BY ID
 	describe('getBookById', () => {
 		it('grabs book by ID', async () => {
 			req.params.id = 1;
@@ -170,6 +172,7 @@ describe('Book Controller', () => {
 		});
 	});
 
+  //ADD BOOK
 	describe('addBook', () => {
 		it('adds a book to the collection', async () => {
 			req.body = {
@@ -302,6 +305,7 @@ describe('Book Controller', () => {
 		});
 	});
 
+  //UPDATE BOOK
 	describe('updateBook', () => {
 		it('updates a book by ID', async () => {
 			req.params.id = 1;
@@ -431,6 +435,7 @@ describe('Book Controller', () => {
 
   });
   
+  //DELETE BOOK
   describe('deleteBook', () => {
 
     it('deletes a book by ID', async () => {
@@ -444,5 +449,141 @@ describe('Book Controller', () => {
       expect(res.locals.deletedBook).toEqual(expected);
     });
 
+    it('returns a 400 status code if no book ID is provided', async () => {
+      req.params.id = null;
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      await container.deleteBook(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ errors: ['No book ID provided...'] });
+    });
+
+    it('returns a 404 status code if book does not exist', async () => {
+      req.params.id = 1;
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'findByIdAndDelete').mockReturnValue(null);
+
+      await container.deleteBook(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ errors: ['Book does not exist, check the ID and try again...'] });
+    });
+
+    it('returns a 500 status code if an error occurs', async () => {
+      req.params.id = 1;
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'findByIdAndDelete').mockImplementation(() => {
+        throw new Error('error');
+      });
+
+      await container.deleteBook(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Error deleting book, check the ID and try again...' });
+    });
+
   });
+
+
+  //SEARCH BOOKS
+  describe('searchBooks', () => {
+    it('searches for books by title or author', async () => {
+      req.query.q = 'The Great Gatsby';
+
+      jest.spyOn(Book, 'find').mockReturnValue({ title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', publicationYear: 1925 })
+
+      const expected = { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', publicationYear: 1925 };
+      await container.searchBooks(req, res, next);
+
+      expect(res.locals.books).toEqual(expected);
+    });
+
+    it('returns a 400 status code if no search parameters are provided', async () => {
+      req.query.q = null;
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      await container.searchBooks(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ errors: ['No search parameters provided, please enter a query...'] });
+    });
+
+    it('returns a 500 status code if an error occurs', async () => {
+      req.query.q = 'The Great Gatsby';
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'find').mockImplementation(() => {
+        throw new Error('error');
+      });
+
+      await container.searchBooks(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Error searching for books...' });
+    });
+
+  });
+
+  //GET STATS
+  describe('getStats', () => {
+    
+    it('returns book collection stats', async () => {
+      jest.spyOn(Book, 'countDocuments').mockResolvedValue(66);
+      jest.spyOn(Book, 'distinct').mockResolvedValue(['Brian Jacques']);
+      jest.spyOn(Book, 'find').mockReturnValue({ sort: jest.fn()});
+
+      await container.getStats(req, res, next);
+      
+      const { totalBooks, booksByAuthor, latestPublicationYear, earliestPublicationYear } = res.locals.stats;
+      
+      expect(totalBooks).toBe(66);
+      expect(booksByAuthor).toBeInstanceOf(Array);
+      expect(latestPublicationYear).toBeGreaterThan(earliestPublicationYear);
+      expect(booksByAuthor.length).toBeGreaterThan(0);
+    });
+
+    it('returns a 500 status code if an error occurs', async () => {
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'countDocuments').mockImplementation(() => {
+        throw new Error('error');
+      });
+
+      await container.getStats(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Error retrieving stats...' });
+    });
+
+
+  });
+
+
 });
