@@ -93,22 +93,21 @@ describe('Book Controller', () => {
 			expect(res.json).toHaveBeenCalledWith({ message: 'No books found...' });
 		});
 
-		it('should throw an error', async () => {
+		it('returns a 500 status code if an error occurs', async () => {
 			res = {
 				status: jest.fn().mockReturnValue({
 					json: jest.fn().mockReturnValue({ message: 'Error retrieving books...' }),
 				}),
 				locals: {},
 			};
-			const spy = jest.spyOn(res, 'status');
-			jest.spyOn(res.status(), 'json');
+		
 			jest.spyOn(Book, 'find').mockImplementation(() => {
 				throw new Error('error');
 			});
 
 			await container.getBooks(req, res, next);
 
-			expect(spy).toHaveBeenCalledWith(500);
+			expect(res.status).toHaveBeenCalledWith(500);
 		});
 	});
 
@@ -383,6 +382,52 @@ describe('Book Controller', () => {
 
 			expect(spy).toHaveBeenCalledWith({ errors: ['Publication year cannot be in the future or negative...'] });
 			expect(res.status).toHaveBeenCalledWith(400);
-		});
+    });
+    
+    it('returns a 404 status code if book is not found', async () => {
+      req.params.id = 1;
+      req.body = {
+        title: 'The Great Gatsby', 
+        author: 'F. Scott Fitzgerald',
+        publicationYear: 1925
+      };
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'findByIdAndUpdate').mockReturnValue(null);
+
+      await container.updateBook(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ errors: ['Book does not exist...'] });
+    });
+
+    it('returns a 500 status code if an error occurs', async () => {
+      req.params.id = 1;
+      req.body = {
+        title: 'The Great Gatsby',
+        author: 'F. Scott Fitzgerald',
+        publicationYear: 1925
+      };
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        locals: {}
+      }
+
+      jest.spyOn(Book, 'findByIdAndUpdate').mockImplementation(() => {
+        throw new Error('error');
+      });
+
+      await container.updateBook(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Error updating book, check the ID and try again...' });
+    });
+
 	});
 });

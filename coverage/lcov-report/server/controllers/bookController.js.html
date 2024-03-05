@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75.72% </span>
+                <span class="strong">78.15% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>156/206</span>
+                <span class='fraction'>161/206</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">97.14% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>33/36</span>
+                <span class='fraction'>34/35</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75.72% </span>
+                <span class="strong">78.15% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>156/206</span>
+                <span class='fraction'>161/206</span>
             </div>
         
             
@@ -351,29 +351,26 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -384,10 +381,13 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -576,10 +576,10 @@ bookController.updateBook = async (req, res, next) =&gt; {
 	try {
 		const book = await Book.findByIdAndUpdate(id);
 		//if the book does not exist, return an error
-		if (!book) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >			errors.push('Book does not exist...');</span>
-<span class="cstat-no" title="statement not covered" >			return res.status(404).json({ errors });</span>
-<span class="cstat-no" title="statement not covered" >		}</span>
+		if (!book) {
+			errors.push('Book does not exist...');
+			return res.status(404).json({ errors });
+		}
 		//if the book exists, update the fields that are provided in the request body if they are not empty
 		if (title) book.title = title;
 		if (author) book.author = author;
@@ -590,9 +590,9 @@ bookController.updateBook = async (req, res, next) =&gt; {
 		res.locals.updatedBook = updatedBook;
 &nbsp;
 		return next();
-	} <span class="branch-0 cbranch-no" title="branch not covered" >catch (err) {</span>
-<span class="cstat-no" title="statement not covered" >		res.status(500).json({ message: 'Error updating book, check the ID and try again...' });</span>
-<span class="cstat-no" title="statement not covered" >	}</span>
+	} catch (err) {
+		res.status(500).json({ message: 'Error updating book, check the ID and try again...' });
+	}
 };
 &nbsp;
 //Delete a specific book by ID.
@@ -688,7 +688,7 @@ export default bookController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-05T07:39:25.597Z
+                at 2024-03-05T07:51:57.274Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
