@@ -1,16 +1,5 @@
 import request from 'supertest';
 import server from '../server.js';
-import { jest } from '@jest/globals';
-import { Book } from '../models/bookModel.js';
-
-
-jest.unstable_mockModule('../models/bookModel.js', () => ({
-	Book: {
-		find: jest.fn(),
-		limit: jest.fn(),
-		skip: jest.fn(),
-	},
-}));
 
 
 describe('GET /books', () => {
