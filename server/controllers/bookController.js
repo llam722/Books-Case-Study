@@ -14,7 +14,6 @@ bookController.getBooks = async (req, res, next) => {
 	try {
 		//find all books, limit the number of books returned to the limit, and skip the amount of books based on the page number
 		const books = await Book.find().limit(limit).skip(skipPage);
-		// console.log(books, 'books length')
 		//if no books are found, return a 204 status code meaning no content
 		if (books.length === 0) return res.status(204).json({ message: 'No books found...' });
 		res.locals.books = books;
@@ -27,9 +26,8 @@ bookController.getBooks = async (req, res, next) => {
 //Retrieve details of a specific book by ID.
 bookController.getBookById = async (req, res, next) => {
 	const { id } = req.params;
-
 	if (!id) return res.status(400).json({ message: 'No book ID provided...' });
-
+	
 	try {
 		//find the book by the provided ID
 		const book = await Book.findById(id);

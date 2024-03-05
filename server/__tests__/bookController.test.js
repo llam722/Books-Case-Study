@@ -86,12 +86,9 @@ describe('Book Controller', () => {
 				json: jest.fn(),
 				locals: {},
 			};
-			const next = jest.fn();
 
-			// Act
 			await container.getBooks(req, res, next);
 
-			// Assert
 			expect(res.status).toHaveBeenCalledWith(204);
 			expect(res.json).toHaveBeenCalledWith({ message: 'No books found...' });
 		});
@@ -115,18 +112,22 @@ describe('Book Controller', () => {
 		});
 	});
 
-	// it('grabs book by ID', async () => {
-	//   req.params.id = 1;
+	it('grabs book by ID', async () => {
+    req.params.id = 1;
+    res = {
+      locals: {},
+    };
+    
+    jest.spyOn(Book, 'findById').mockReturnValue(
+      {
+        title: 'The Great Gatsby',
+        author: 'F. Scott Fitzgerald',
+        publicationYear: 1925,
+      }
+    );
+		const expected = { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', publicationYear: 1925 }
+		await container.getBookById(req, res, next);
 
-	//   const getBookById = await container.getBookById(req, res, next);
-	// 	console.log(getBookById);
-
-	// 	// Arrange
-	// 	const expected = 'expected result';
-
-	//   // Act
-
-	// 	// Assert
-	// 	expect(getBookById).toEqual(expected);
-	// });
+		expect(res.locals.book).toEqual(expected);
+	});
 });
