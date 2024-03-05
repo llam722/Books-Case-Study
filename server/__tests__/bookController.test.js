@@ -243,7 +243,7 @@ describe('Book Controller', () => {
 			expect(res.status).toHaveBeenCalledWith(400);
 		});
 
-		it('returns a 400 status code if publication year in the future or negative', async () => {
+		it('returns a 400 status code if publication year in the future', async () => {
 			req.body = {
 				title: 'asdf',
 				author: 'F. Scott Fitzgerald',
@@ -261,6 +261,26 @@ describe('Book Controller', () => {
 			expect(spy).toHaveBeenCalledWith({ errors: ['Publication year cannot be in the future or negative...'] });
 			expect(res.status).toHaveBeenCalledWith(400);
 		});
+
+		it('returns a 400 status code if publication year is negative', async () => {
+			req.body = {
+				title: 'asdf',
+				author: 'F. Scott Fitzgerald',
+				publicationYear: -1,
+			};
+			res = {
+				status: jest.fn().mockReturnThis(),
+				json: jest.fn(),
+				locals: {},
+			};
+			const spy = jest.spyOn(res.status(), 'json');
+
+			await container.addBook(req, res, next);
+
+			expect(spy).toHaveBeenCalledWith({ errors: ['Publication year cannot be in the future or negative...'] });
+			expect(res.status).toHaveBeenCalledWith(400);
+		});
+
 		it('returns a 500 status code if an error occurs', async () => {
 			req.body = {
 				title: 'The Great Gatsby',
@@ -307,6 +327,62 @@ describe('Book Controller', () => {
 			await container.updateBook(req, res, next);
 
 			expect(res.locals.updatedBook).toEqual(expected);
+		});
+
+		it('returns a 400 status code if no data is provided', async () => {
+			req.params.id = 1;
+			req.body = {};
+			res = {
+				status: jest.fn().mockReturnThis(),
+				json: jest.fn(),
+				locals: {},
+			};
+			const spy = jest.spyOn(res.status(), 'json');
+
+			await container.updateBook(req, res, next);
+
+			expect(spy).toHaveBeenCalledWith({ errors: ['No data provided to update book...'] });
+			expect(res.status).toHaveBeenCalledWith(400);
+		});
+
+		it('returns a 400 status code if publication year in the future ', async () => {
+			req.params.id = 1;
+			req.body = {
+				title: 'The Great Gatsby',
+				author: 'F. Scott Fitzgerald',
+				publicationYear: 2026,
+			};
+			res = {
+				status: jest.fn().mockReturnThis(),
+				json: jest.fn(),
+				locals: {},
+			};
+			const spy = jest.spyOn(res.status(), 'json');
+
+			await container.updateBook(req, res, next);
+
+			expect(spy).toHaveBeenCalledWith({ errors: ['Publication year cannot be in the future or negative...'] });
+			expect(res.status).toHaveBeenCalledWith(400);
+		});
+
+		it('returns a 400 status code if publication year is negative', async () => {
+			req.params.id = 1;
+			req.body = {
+				title: 'The Great Gatsby',
+				author: 'F. Scott Fitzgerald',
+				publicationYear: -1,
+			};
+			res = {
+				status: jest.fn().mockReturnThis(),
+				json: jest.fn(),
+				locals: {},
+			};
+			const spy = jest.spyOn(res.status(), 'json');
+
+			await container.updateBook(req, res, next);
+
+			expect(spy).toHaveBeenCalledWith({ errors: ['Publication year cannot be in the future or negative...'] });
+			expect(res.status).toHaveBeenCalledWith(400);
 		});
 	});
 });
