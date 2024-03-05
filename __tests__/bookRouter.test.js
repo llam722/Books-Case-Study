@@ -1,6 +1,22 @@
 import request from 'supertest';
 import server from '../server/server.js';
 
+
+let bookId;
+
+//shortcut to create a book and get its id for the delete request
+beforeAll(async () => {
+	const app = request(server);
+	await app.post('/books').send({
+		title: 'The Stranger',
+		author: 'Albert Camus',
+		publicationYear: 1942,
+	});
+	const book2 = await app.get('/books/search?q=camus');
+	bookId = book2.body[1]._id;
+});
+
+	
 describe('GET /books', () => {
 	it('should return an array of books', async () => {
 		const response = await request(server).get('/books');
@@ -89,17 +105,16 @@ describe('GET /books/:id', () => {
 		});
 	});
 
-	// describe('DELETE /books/:id', () => {
-	// 	it('should delete a book from the collection', async () => {
-	// 		const id = '65e6df5d74fd952ecf1ad178';
-	// 		const response = await request(server).delete(`/books/${id}`);
+	describe('DELETE /books/:id', () => {
+		it('should delete a book from the collection', async () => {
+			const response = await request(server).delete(`/books/${bookId}`);
 
-	// 		//expecting the deleted object to be returned
-	// 		expect(response.statusCode).toBe(200);
-	// 		expect(response.body).toBeInstanceOf(Object);
-	// 		expect(response.body).toHaveProperty('title');
-	// 		expect(response.body).toHaveProperty('author');
-	// 		expect(response.body).toHaveProperty('publicationYear');
-	// 	});
-	// });
+			//expecting the deleted object to be returned
+			expect(response.statusCode).toBe(200);
+			expect(response.body).toBeInstanceOf(Object);
+			expect(response.body).toHaveProperty('title');
+			expect(response.body).toHaveProperty('author');
+			expect(response.body).toHaveProperty('publicationYear');
+		});
+	});
 });
