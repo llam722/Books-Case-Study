@@ -41,5 +41,70 @@ describe('GET /books/:id', () => {
 		expect(response.body).toHaveProperty('author');
 		expect(response.body).toHaveProperty('publicationYear');
 	});
+
+	describe('GET /books/search', () => {
+		it('should return books matching search query', async () => {
+			const query = 'jacques';
+			const response = await request(server).get(`/books/search?q=${query}`);
+			
+			expect(response.statusCode).toBe(200);
+			expect(response.body).toBeInstanceOf(Array);
+			expect(response.body).toHaveLength(7);
+		});
+	});
+
+	describe('POST /books', () => {
+		it('should add a new book to the collection', async () => {
+			const newBook = {
+				title: 'New Book',
+				author: 'New Author',
+				publicationYear: 2021,
+			};
+			const response = await request(server).post('/books').send(newBook);
+
+			expect(response.statusCode).toBe(201);
+			expect(response.body).toBeInstanceOf(Object);
+			expect(response.body).toHaveProperty('title', newBook.title);
+			expect(response.body).toHaveProperty('author', newBook.author);
+			expect(response.body).toHaveProperty('publicationYear', newBook.publicationYear);
+		});
+	});
+
+	describe('PUT /books/:id', () => {
+		it('should update a book in the collection', async () => {
+			const id = '65e547eb27770bd1653352c3';
+			const updatedBook = {
+				title: 'Updated Book',
+				author: 'Updated Author',
+				publicationYear: 2022,
+			};
+			const response = await request(server).put(`/books/${id}`).send(updatedBook);
+
+			const { title, author, publicationYear } = updatedBook;
+
+			expect(response.statusCode).toBe(200);
+			expect(response.body).toBeInstanceOf(Object);
+			// Check optional fields were updated if they existed in request body
+			if (title) expect(response.body).toHaveProperty('title', title);
+			if (author) expect(response.body).toHaveProperty('author', author);
+			if (publicationYear) expect(response.body).toHaveProperty('publicationYear', publicationYear);
+		});
+	});
+
+	describe('DELETE /books/:id', () => {
+		it('should delete a book from the collection', async () => {
+			const id = '65e547eb27770bd1653352c3';
+			const response = await request(server).delete(`/books/${id}`);
+			
+			//expecting the deleted object to be returned
+			expect(response.statusCode).toBe(200);
+			expect(response.body).toBeInstanceOf(Object);
+			expect(response.body).toHaveProperty('title');
+			expect(response.body).toHaveProperty('author');
+			expect(response.body).toHaveProperty('publicationYear');
+		});
+	});
+
+
 });
 

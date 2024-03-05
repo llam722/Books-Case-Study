@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.64% </span>
+                <span class="strong">96.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>25/31</span>
+                <span class='fraction'>27/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
                 <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">80.64% </span>
+                <span class="strong">96.42% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>25/31</span>
+                <span class='fraction'>27/28</span>
             </div>
         
             
@@ -91,26 +91,13 @@
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -123,39 +110,43 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import mongoose from "mongoose";
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import dotenv from 'dotenv';
+dotenv.config();
+&nbsp;
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 &nbsp;
-//mongodb URI for connecting to the database, hardcoded for now, but should be stored in an environment variable (.env) for security
-const DB_URI =
-  "mongodb+srv://louislam7229:weyGIDgLqyE1CIDc@erewhon.qdpiolq.mongodb.net/?retryWrites=true&amp;w=majority&amp;appName=Erewhon";
+//mongodb URI for connecting to the database, should be stored in an environment variable (.env) for security
+const DB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@erewhon.qdpiolq.mongodb.net/?retryWrites=true&amp;w=majority&amp;appName=Erewhon`;
 &nbsp;
 //connect to the database
 mongoose
-  .connect(DB_URI, {
-    dbName: "Erewhon",
-  })
-  .then(() =&gt; {
-<span class="cstat-no" title="statement not covered" >    console.log("Connected to MongoDB...");</span>
-<span class="cstat-no" title="statement not covered" >  })</span>
-  .catch((err) =&gt; {
-<span class="cstat-no" title="statement not covered" >    console.log(err, 'Connection to MongoDB failed...');</span>
-  });
+	.connect(DB_URI, {
+		dbName: 'Erewhon',
+	})
+	.then(() =&gt; {
+		console.log('Connected to MongoDB...');
+	})
+	.catch((err) =&gt; {
+<span class="cstat-no" title="statement not covered" >		console.log(err, 'Connection to MongoDB failed...');</span>
+	});
 &nbsp;
-  const bookSchema = new Schema({
-    title: { type: String, required: true },
-    author: { type: String, required: true },
-    publicationYear: { type: Number, required: true },
-  });
-  
-  export const Book = mongoose.model("Book", bookSchema);
-  
-  export const loadData = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  //create a new schema for the book model</span>
-<span class="cstat-no" title="statement not covered" >  return mongoose.model("Book", bookSchema);</span>
-<span class="cstat-no" title="statement not covered" > }</span>
+const bookSchema = new Schema({
+	title: { type: String, required: true },
+	author: { type: String, required: true },
+	publicationYear: { type: Number, required: true },
+});
+&nbsp;
+export const Book = mongoose.model('Book', bookSchema);
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -163,7 +154,7 @@ mongoose
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-05T05:53:19.254Z
+                at 2024-03-05T08:54:41.166Z
             </div>
         <script src="../prettify.js"></script>
         <script>
