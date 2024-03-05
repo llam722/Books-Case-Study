@@ -3,7 +3,7 @@ import server from '../server.js';
 import { jest } from '@jest/globals';
 import { Book } from '../models/bookModel.js';
 
-// Assuming jest.unstable_mockModule() is available and working with your Jest version
+
 jest.unstable_mockModule('../models/bookModel.js', () => ({
 	Book: {
 		find: jest.fn(),
@@ -12,9 +12,6 @@ jest.unstable_mockModule('../models/bookModel.js', () => ({
 	},
 }));
 
-const getData = () => {
-
-}
 
 describe('GET /books', () => {
 	it('should return an array of books', async () => {
