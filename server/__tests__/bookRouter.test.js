@@ -7,18 +7,21 @@ import { Book } from '../models/bookModel.js';
 jest.unstable_mockModule('../models/bookModel.js', () => ({
 	Book: {
 		find: jest.fn(),
+		limit: jest.fn(),
+		skip: jest.fn(),
 	},
 }));
 
+const getData = () => {
+
+}
 
 describe('GET /books', () => {
 	it('should return an array of books', async () => {
-		const mockedBooks = [
-			{ title: 'Book 1', author: 'Author 1', publicationYear: 2001 },
-			{ title: 'Book 2', author: 'Author 2', publicationYear: 2002 },
-		];
 
-		Book.find(mockedBooks);
+		Books.find()
+
+		expect(Books.find).toHaveBeenCalled()
 
 		const response = await request(server).get('/books');
 
@@ -44,3 +47,31 @@ describe('GET /books/stats', () => {
 		expect(response.body.booksByAuthor).toBeInstanceOf(Array);
 	});
 });
+
+describe('GET /books/:id', () => {
+	it('should return book at id', async () => {
+		const id = '65e547eb27770bd1653352c3';
+		const response = await request(server).get(`/books/${id}`);
+		
+		console.log(response.body)
+    
+		expect(response.statusCode).toBe(200);
+		expect(response.body).toBeInstanceOf(Object);
+		expect(response.body).toHaveProperty('title');
+		expect(response.body).toHaveProperty('author');
+		expect(response.body).toHaveProperty('publicationYear');
+	});
+});
+
+
+/*
+[
+    {
+        "_id": "65e547eb27770bd1653352c3",
+        "title": "The Silver Chair",
+        "author": "C.S. Lewis",
+        "publicationYear": 1953,
+        "__v": 0
+    }
+]
+*/

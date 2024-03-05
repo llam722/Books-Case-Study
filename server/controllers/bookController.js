@@ -14,6 +14,7 @@ bookController.getBooks = async (req, res, next) => {
 	try {
 		//find all books, limit the number of books returned to the limit, and skip the amount of books based on the page number
 		const books = await Book.find().limit(limit).skip(skipPage);
+		// console.log(books, 'books length')
 		//if no books are found, return a 204 status code meaning no content
 		if (books.length === 0) return res.status(204).json({ message: 'No books found...' });
 		res.locals.books = books;
@@ -174,7 +175,7 @@ bookController.getStats = async (req, res, next) => {
 		//get the total number of books
 		const totalBooks = await Book.countDocuments();
 		stats.totalBooks = totalBooks;
-		
+
 		//get the total number of authors
 		const numOfAuthors = await Book.distinct('author');
 		stats.numOfAuthors = numOfAuthors.length;
@@ -191,9 +192,9 @@ bookController.getStats = async (req, res, next) => {
 
 		//add functionality to aggregate and return an array with the number of books for each author, sorted in descending order
 		const booksByAuthor = await Book.aggregate([
-			{ $group: { _id: '$author', books: { $sum: 1 }, authors: { $sum: 1} } },
+			{ $group: { _id: '$author', books: { $sum: 1 }, authors: { $sum: 1 } } },
 			{ $sort: { books: -1 } },
-			{ $project: { author: '$_id', books: 1, _id: 0 } }
+			{ $project: { author: '$_id', books: 1, _id: 0 } },
 		]);
 		stats.booksByAuthor = booksByAuthor;
 
