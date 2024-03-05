@@ -128,14 +128,13 @@ bookController.deleteBook = async (req, res, next) => {
 	}
 
 	try {
-		const book = await Book.findById(id);
+		//if the book exists, delete it from the database and return the deleted book (in case the user wants to undo the delete operation)
+		const deletedBook = await Book.findByIdAndDelete(id);
 		//handles the case where the book does not exist
-		if (!book) {
+		if (!deletedBook) {
 			errors.push('Book does not exist, check the ID and try again...');
 			return res.status(404).json({ errors });
 		}
-		//if the book exists, delete it from the database and return the deleted book (in case the user wants to undo the delete operation)
-		const deletedBook = await Book.findByIdAndDelete(id);
 		res.locals.deletedBook = deletedBook;
 
 		return next();
