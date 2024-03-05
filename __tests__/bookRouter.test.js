@@ -1,7 +1,7 @@
 import request from 'supertest';
 import server from '../server/server.js';
 
-
+//passed onto delete test
 let bookId;
 
 //shortcut to create a book and get its id for the delete request
