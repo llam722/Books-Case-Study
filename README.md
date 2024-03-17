@@ -1,4 +1,4 @@
-# Louis Lam Erewhon-Case-Study (Spring 2024)
+# Book-Case-Study (Spring 2024)
 
 ## Setup instructions
 1. Install all dependencies by typing ```npm install``` in the terminal.
